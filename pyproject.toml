@@ -4,14 +4,14 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "pdf-craft"
-version = "1.0.12"
+version = "1.0.0"
 description = "PDF craft can convert PDF files into various other formats. This project will focus on processing PDF files of scanned books."
 license = "MIT"
-authors = ["Tao Zeyu <i@taozeyu.com>"]
-maintainers = ["Tao Zeyu <i@taozeyu.com>"]
+authors = ["Horky <horky.chen@gmail.com>", "Tao Zeyu <i@taozeyu.com>"]
+maintainers = ["Horky <horky.chen@gmail.com>", "Tao Zeyu <i@taozeyu.com>"]
 readme = "README.md"
-homepage = "https://hub.oomol.com/package/pdf-craft"
-repository = "https://github.com/oomol-lab/pdf-craft"
+homepage = "https://github.com/PoxenStudio/pdf-craft"
+repository = "https://github.com/PoxenStudio/pdf-craft"
 keywords = ["pdf", "epub", "markdown"]
 packages = [
     {include = "pdf_craft" }

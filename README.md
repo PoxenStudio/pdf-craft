@@ -1,12 +1,12 @@
 <div align=center>
   <h1>PDF Craft</h1>
   <p>
-    <a href="https://github.com/oomol-lab/pdf-craft/actions/workflows/merge-build.yml" target="_blank"><img src="https://img.shields.io/github/actions/workflow/status/oomol-lab/pdf-craft/merge-build.yml" alt="ci" /></a>
+    <a href="https://github.com/PoxenStudio/pdf-craft/actions/workflows/merge-build.yml" target="_blank"><img src="https://img.shields.io/github/actions/workflow/status/PoxenStudio/pdf-craft/merge-build.yml" alt="ci" /></a>
     <a href="https://pypi.org/project/pdf-craft/" target="_blank"><img src="https://img.shields.io/badge/pip_install-pdf--craft-blue" alt="pip install pdf-craft" /></a>
     <a href="https://pypi.org/project/pdf-craft/" target="_blank"><img src="https://img.shields.io/pypi/v/pdf-craft.svg" alt="pypi pdf-craft" /></a>
     <a href="https://pypi.org/project/pdf-craft/" target="_blank"><img src="https://img.shields.io/pypi/pyversions/pdf-craft.svg" alt="python versions" /></a>
-    <a href="https://deepwiki.com/oomol-lab/pdf-craft" target="_blank"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki" /></a>
-    <a href="https://github.com/oomol-lab/pdf-craft/blob/main/LICENSE" target="_blank"><img src="https://img.shields.io/github/license/oomol-lab/pdf-craft" alt="license" /></a>
+    <a href="https://deepwiki.com/PoxenStudio/pdf-craft" target="_blank"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki" /></a>
+    <a href="https://github.com/PoxenStudio/pdf-craft/blob/main/LICENSE" target="_blank"><img src="https://img.shields.io/github/license/PoxenStudio/pdf-craft" alt="license" /></a>
   </p>
   <p><a href="https://hub.oomol.com/package/pdf-craft?open=true" target="_blank"><img src="https://static.oomol.com/assets/button.svg" alt="Open in OOMOL Studio" /></a></p>
   <p>English | <a href="./README_zh-CN.md">中文</a></p>
@@ -22,7 +22,7 @@ This project is based on [DeepSeek OCR](https://github.com/deepseek-ai/DeepSeek-
 
 Starting from the official v1.0.0 release, pdf-craft fully embraces [DeepSeek OCR](https://github.com/deepseek-ai/DeepSeek-OCR) and no longer relies on LLM for text correction. This change brings significant performance improvements: the entire conversion process is completed locally without network requests, eliminating the long waits and occasional network failures of the old version.
 
-However, the new version has also removed the LLM text correction feature. If your use case still requires this functionality, you can continue using the old version [v0.2.8](https://github.com/oomol-lab/pdf-craft/tree/v0.2.8).
+However, the new version has also removed the LLM text correction feature. If your use case still requires this functionality, you can continue using the old version [v0.2.8](https://github.com/PoxenStudio/pdf-craft/tree/v0.2.8).
 
 ### Online Demo
 
