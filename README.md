@@ -1,14 +1,11 @@
 <div align=center>
   <h1>PDF Craft</h1>
   <p>
-    <a href="https://github.com/PoxenStudio/pdf-craft/actions/workflows/merge-build.yml" target="_blank"><img src="https://img.shields.io/github/actions/workflow/status/PoxenStudio/pdf-craft/merge-build.yml" alt="ci" /></a>
     <a href="https://pypi.org/project/pdf-craft/" target="_blank"><img src="https://img.shields.io/badge/pip_install-pdf--craft-blue" alt="pip install pdf-craft" /></a>
     <a href="https://pypi.org/project/pdf-craft/" target="_blank"><img src="https://img.shields.io/pypi/v/pdf-craft.svg" alt="pypi pdf-craft" /></a>
     <a href="https://pypi.org/project/pdf-craft/" target="_blank"><img src="https://img.shields.io/pypi/pyversions/pdf-craft.svg" alt="python versions" /></a>
-    <a href="https://deepwiki.com/PoxenStudio/pdf-craft" target="_blank"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki" /></a>
     <a href="https://github.com/PoxenStudio/pdf-craft/blob/main/LICENSE" target="_blank"><img src="https://img.shields.io/github/license/PoxenStudio/pdf-craft" alt="license" /></a>
   </p>
-  <p><a href="https://hub.oomol.com/package/pdf-craft?open=true" target="_blank"><img src="https://static.oomol.com/assets/button.svg" alt="Open in OOMOL Studio" /></a></p>
   <p>English | <a href="./README_zh-CN.md">中文</a></p>
 </div>
 
@@ -18,17 +15,12 @@ pdf-craft converts PDF files into various other formats, with a focus on handlin
 
 This project is based on [DeepSeek OCR](https://github.com/deepseek-ai/DeepSeek-OCR) for document recognition. It supports the recognition of complex content such as tables and formulas. With GPU acceleration, pdf-craft can complete the entire conversion process from PDF to Markdown or EPUB locally. During the conversion, pdf-craft automatically identifies document structure, accurately extracts body text, and filters out interfering elements like headers and footers. For academic or technical documents containing footnotes, formulas, and tables, pdf-craft handles them properly, preserving these important elements (including images and other assets within footnotes). When converting to EPUB, the table of contents is automatically generated. The final Markdown or EPUB files maintain the content integrity and readability of the original book.
 
+This is PoxenStudio distribution, the target is to integrated with [Talebook(PoxenStudio)](https://github.com/PoxenStudio/talebook).
+
 ## Lightweight and Fast
 
 Starting from the official v1.0.0 release, pdf-craft fully embraces [DeepSeek OCR](https://github.com/deepseek-ai/DeepSeek-OCR) and no longer relies on LLM for text correction. This change brings significant performance improvements: the entire conversion process is completed locally without network requests, eliminating the long waits and occasional network failures of the old version.
 
-However, the new version has also removed the LLM text correction feature. If your use case still requires this functionality, you can continue using the old version [v0.2.8](https://github.com/PoxenStudio/pdf-craft/tree/v0.2.8).
-
-### Online Demo
-
-We provide an [online demo platform](https://pdf.oomol.com/) that lets you experience PDF Craft's conversion capabilities without any installation. You can directly upload PDF files and convert them.
-
-[![PDF Craft Online Demo](docs/images/website-en.png)](https://pdf.oomol.com/)
 
 ## Quick Start
 
