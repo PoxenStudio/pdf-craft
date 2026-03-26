@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PoxenStudio PDF Craft</title>
+  <style>
+    /* ── Reset & base ───────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0d1117;
+      --surface:   #161b22;
+      --border:    #30363d;
+      --primary:   #58a6ff;
+      --primary-h: #388bfd;
+      --success:   #3fb950;
+      --warning:   #d29922;
+      --danger:    #f85149;
+      --muted:     #8b949e;
+      --text:      #e6edf3;
+      --radius:    8px;
+      --transition: 0.2s ease;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* ── Layout ─────────────────────────────────────────────────── */
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 48px 16px 80px;
+    }
+
+    /* ── Header ─────────────────────────────────────────────────── */
+    header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .brand {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: var(--text);
+    }
+
+    .brand span {
+      color: var(--primary);
+    }
+
+    .tagline {
+      color: var(--muted);
+      margin-top: 6px;
+      font-size: 13px;
+    }
+
+    /* ── Upload card ─────────────────────────────────────────────── */
+    .upload-card {
+      width: 100%;
+      max-width: 560px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+    }
+
+    .drop-zone {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 40px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color var(--transition), background var(--transition);
+      position: relative;
+    }
+
+    .drop-zone:hover,
+    .drop-zone.drag-over {
+      border-color: var(--primary);
+      background: rgba(88, 166, 255, 0.05);
+    }
+
+    .drop-zone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+
+    .drop-icon {
+      font-size: 40px;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .drop-label {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .drop-hint {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .file-selected {
+      margin-top: 12px;
+      font-size: 13px;
+      color: var(--primary);
+      word-break: break-all;
+    }
+
+    /* ── Options ─────────────────────────────────────────────────── */
+    .options {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .options .full { grid-column: 1 / -1; }
+
+    label.field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    label.field input,
+    label.field select {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 13px;
+      padding: 6px 10px;
+      outline: none;
+      transition: border-color var(--transition);
+    }
+
+    label.field input:focus,
+    label.field select:focus {
+      border-color: var(--primary);
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .checkbox-row input[type="checkbox"] {
+      accent-color: var(--primary);
+      width: 15px;
+      height: 15px;
+      cursor: pointer;
+    }
+
+    /* ── Submit button ───────────────────────────────────────────── */
+    .btn-submit {
+      margin-top: 20px;
+      width: 100%;
+      padding: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      background: var(--primary);
+      color: #0d1117;
+      transition: background var(--transition), opacity var(--transition);
+    }
+
+    .btn-submit:hover { background: var(--primary-h); }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── Toast / status message ──────────────────────────────────── */
+    #toast {
+      margin-top: 16px;
+      font-size: 13px;
+      min-height: 20px;
+      text-align: center;
+    }
+
+    /* ── Task list ───────────────────────────────────────────────── */
+    .tasks-section {
+      width: 100%;
+      max-width: 900px;
+      margin-top: 48px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-title .refresh-btn {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--primary);
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 2px 8px;
+      border-radius: 4px;
+      transition: background var(--transition);
+    }
+
+    .section-title .refresh-btn:hover { background: rgba(88,166,255,0.1); }
+
+    #task-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* ── Task card ───────────────────────────────────────────────── */
+    .task-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px 16px;
+      align-items: start;
+    }
+
+    .task-name {
+      font-weight: 500;
+      word-break: break-all;
+    }
+
+    .task-meta {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .task-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+    }
+
+    /* status badge */
+    .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-running  { background: rgba(210,153,34,0.15);  color: var(--warning); }
+    .badge-pending  { background: rgba(139,148,158,0.15); color: var(--muted);   }
+    .badge-completed{ background: rgba(63,185,80,0.15);   color: var(--success); }
+    .badge-failed   { background: rgba(248,81,73,0.15);   color: var(--danger);  }
+
+    /* progress bar */
+    .progress-wrap {
+      width: 140px;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--warning);
+      border-radius: 2px;
+      transition: width 0.4s ease;
+    }
+
+    .progress-fill.done { background: var(--success); }
+
+    /* download link */
+    .dl-link {
+      font-size: 12px;
+      color: var(--primary);
+      text-decoration: none;
+      padding: 4px 10px;
+      border: 1px solid var(--primary);
+      border-radius: 6px;
+      transition: background var(--transition);
+    }
+
+    .dl-link:hover { background: rgba(88,166,255,0.1); }
+
+    .error-text {
+      font-size: 11px;
+      color: var(--danger);
+      max-width: 300px;
+      word-break: break-word;
+      margin-top: 4px;
+    }
+
+    .empty-hint {
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+      padding: 32px;
+    }
+
+    /* ── Top-right toolbar ───────────────────────────────────────── */
+    .toolbar {
+      position: fixed;
+      top: 16px;
+      right: 20px;
+      z-index: 100;
+    }
+
+    .btn-icon {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 18px;
+      padding: 6px 10px;
+      line-height: 1;
+      transition: color var(--transition), border-color var(--transition);
+    }
+    .btn-icon:hover { color: var(--primary); border-color: var(--primary); }
+
+    /* ── Modal overlay ───────────────────────────────────────────── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 480px;
+      margin: 16px;
+      overflow: hidden;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-title {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 20px;
+      line-height: 1;
+      padding: 2px 4px;
+      transition: color var(--transition);
+    }
+    .modal-close:hover { color: var(--text); }
+
+    .modal-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .modal-section-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 2px;
+    }
+
+    .llm-fields {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+
+    .llm-fields.disabled { opacity: 0.45; pointer-events: none; }
+
+    .modal-footer {
+      padding: 14px 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .btn-secondary {
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      transition: border-color var(--transition), color var(--transition);
+    }
+    .btn-secondary:hover { border-color: var(--text); color: var(--text); }
+
+    .btn-primary {
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      border: none;
+      border-radius: var(--radius);
+      background: var(--primary);
+      color: #0d1117;
+      cursor: pointer;
+      transition: background var(--transition), opacity var(--transition);
+    }
+    .btn-primary:hover  { background: var(--primary-h); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .modal-msg {
+      font-size: 12px;
+      min-height: 16px;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+  <!-- Settings button (top-right) -->
+  <div class="toolbar">
+    <button class="btn-icon" id="settingsBtn" title="Settings">⚙</button>
+  </div>
+
+  <!-- Settings modal -->
+  <div class="modal-overlay" id="settingsOverlay">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-header">
+        <span class="modal-title" id="modalTitle">Settings</span>
+        <button class="modal-close" id="modalClose" aria-label="Close">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-section-title">LLM-Enhanced TOC Extraction</div>
+        <label class="checkbox-row">
+          <input type="checkbox" id="sLlmEnabled" />
+          Enable LLM-powered chapter title analysis
+        </label>
+        <div class="llm-fields" id="llmFields">
+          <label class="field">
+            API Key
+            <input type="password" id="sApiKey" placeholder="sk-…" autocomplete="off" />
+          </label>
+          <label class="field">
+            API URL
+            <input type="text" id="sApiUrl" placeholder="https://api.openai.com/v1" />
+          </label>
+          <label class="field">
+            Model
+            <input type="text" id="sModel" placeholder="gpt-4" />
+          </label>
+          <label class="field">
+            Token encoding
+            <input type="text" id="sTokenEncoding" placeholder="cl100k_base" />
+          </label>
+        </div>
+        <div class="modal-msg" id="settingsMsg"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="modalCancel">Cancel</button>
+        <button class="btn-primary" id="modalSave">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="page">
+    <!-- Header -->
+    <header>
+      <div class="brand">PoxenStudio <span>PDF Craft</span></div>
+      <div class="tagline">Convert PDF documents to EPUB with AI-powered OCR</div>
+    </header>
+
+    <!-- Upload card -->
+    <div class="upload-card">
+      <div class="drop-zone" id="dropZone">
+        <input type="file" id="fileInput" accept=".pdf" />
+        <span class="drop-icon">📄</span>
+        <div class="drop-label">Drop your PDF here or click to browse</div>
+        <div class="drop-hint">Only PDF files are accepted</div>
+        <div class="file-selected" id="fileSelected"></div>
+      </div>
+
+      <div class="options">
+        <label class="field full">
+          Book title (optional)
+          <input type="text" id="title" placeholder="Leave blank to auto-detect" />
+        </label>
+        <label class="field full">
+          Authors (comma-separated, optional)
+          <input type="text" id="authors" placeholder="e.g. Author One, Author Two" />
+        </label>
+        <label class="field">
+          Language
+          <select id="lan">
+            <option value="zh" selected>Chinese (zh)</option>
+            <option value="en">English (en)</option>
+          </select>
+        </label>
+        <div style="display:flex;flex-direction:column;gap:10px;justify-content:flex-end;">
+          <label class="checkbox-row">
+            <input type="checkbox" id="includeCover" checked />
+            Include cover
+          </label>
+          <label class="checkbox-row">
+            <input type="checkbox" id="includeFootnotes" />
+            Include footnotes
+          </label>
+        </div>
+      </div>
+
+      <button class="btn-submit" id="submitBtn" disabled>Convert to EPUB</button>
+      <div id="toast"></div>
+    </div>
+
+    <!-- Task history -->
+    <div class="tasks-section">
+      <div class="section-title">
+        Recent Tasks
+        <button class="refresh-btn" onclick="loadTasks()">↻ Refresh</button>
+      </div>
+      <div id="task-list"></div>
+    </div>
+  </div>
+
+  <script>
+    // ── DOM refs ────────────────────────────────────────────────────
+    const dropZone    = document.getElementById('dropZone');
+    const fileInput   = document.getElementById('fileInput');
+    const fileSelected= document.getElementById('fileSelected');
+    const submitBtn   = document.getElementById('submitBtn');
+    const toast       = document.getElementById('toast');
+    const taskList    = document.getElementById('task-list');
+
+    let selectedFile  = null;
+    let pollingTimers = {};   // task_id -> intervalId
+
+    // ── File selection ──────────────────────────────────────────────
+    fileInput.addEventListener('change', () => {
+      const f = fileInput.files[0];
+      if (f) selectFile(f);
+    });
+
+    dropZone.addEventListener('dragover', e => {
+      e.preventDefault();
+      dropZone.classList.add('drag-over');
+    });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+    dropZone.addEventListener('drop', e => {
+      e.preventDefault();
+      dropZone.classList.remove('drag-over');
+      const f = e.dataTransfer.files[0];
+      if (f) selectFile(f);
+    });
+
+    function selectFile(f) {
+      if (!f.name.toLowerCase().endsWith('.pdf')) {
+        showToast('Only PDF files are accepted.', 'error');
+        return;
+      }
+      selectedFile = f;
+      fileSelected.textContent = f.name;
+      submitBtn.disabled = false;
+    }
+
+    // ── Submit ──────────────────────────────────────────────────────
+    submitBtn.addEventListener('click', async () => {
+      if (!selectedFile) return;
+      submitBtn.disabled = true;
+      showToast('Uploading and starting conversion…', 'info');
+
+      const fd = new FormData();
+      fd.append('file', selectedFile);
+      const title   = document.getElementById('title').value.trim();
+      const authors = document.getElementById('authors').value.trim();
+      const lan     = document.getElementById('lan').value;
+      const cover   = document.getElementById('includeCover').checked;
+      const fn      = document.getElementById('includeFootnotes').checked;
+
+      if (title)   fd.append('title', title);
+      if (authors) fd.append('authors', authors);
+      fd.append('lan', lan);
+      fd.append('includes_cover', cover);
+      fd.append('includes_footnotes', fn);
+
+      try {
+        const resp = await fetch('/api/tasks', { method: 'POST', body: fd });
+        const json = await resp.json();
+        if (json.code === 200) {
+          showToast(`Task created: ${json.data.task_id}`, 'success');
+          fileSelected.textContent = '';
+          selectedFile = null;
+          fileInput.value = '';
+          submitBtn.disabled = true;
+          await loadTasks();
+          startPolling(json.data.task_id);
+        } else {
+          showToast(`Error ${json.code}: ${json.msg}`, 'error');
+          submitBtn.disabled = false;
+        }
+      } catch(e) {
+        showToast('Network error: ' + e.message, 'error');
+        submitBtn.disabled = false;
+      }
+    });
+
+    // ── Toast helper ────────────────────────────────────────────────
+    function showToast(msg, type = 'info') {
+      const colors = { info: '#8b949e', success: '#3fb950', error: '#f85149' };
+      toast.style.color = colors[type] || colors.info;
+      toast.textContent = msg;
+    }
+
+    // ── Task list ───────────────────────────────────────────────────
+    async function loadTasks() {
+      try {
+        const resp = await fetch('/api/tasks');
+        const json = await resp.json();
+        if (json.code !== 200) return;
+        renderTasks(json.data.tasks || []);
+      } catch(e) {
+        console.error('Failed to load tasks:', e);
+      }
+    }
+
+    function renderTasks(tasks) {
+      if (!tasks.length) {
+        taskList.innerHTML = '<div class="empty-hint">No tasks in the last 24 hours.</div>';
+        return;
+      }
+      taskList.innerHTML = tasks.map(taskCard).join('');
+    }
+
+    function taskCard(t) {
+      const createdAt = new Date(t.created_at).toLocaleString();
+      const pct       = Math.round((t.progress || 0) * 100);
+      const isDone    = t.status === 'completed';
+      const isFailed  = t.status === 'failed';
+
+      let actionsHtml = `<span class="badge badge-${t.status}">${t.status}</span>`;
+
+      if (t.status === 'running' || t.status === 'pending') {
+        actionsHtml += `
+          <div class="progress-wrap">
+            <div class="progress-fill" style="width:${pct}%"></div>
+          </div>`;
+      }
+
+      if (isDone) {
+        const size = t.file_size ? formatBytes(t.file_size) : '';
+        actionsHtml += `
+          <div class="progress-wrap">
+            <div class="progress-fill done" style="width:100%"></div>
+          </div>
+          <a class="dl-link" href="/api/tasks/${t.task_id}/download" download>
+            ↓ Download${size ? ' (' + size + ')' : ''}
+          </a>`;
+      }
+
+      const errorHtml = isFailed && t.error_msg
+        ? `<div class="error-text" title="${escHtml(t.error_msg)}">${escHtml(truncate(t.error_msg, 120))}</div>`
+        : '';
+
+      return `
+        <div class="task-card" id="task-${t.task_id}">
+          <div>
+            <div class="task-name">${escHtml(t.filename)}</div>
+            <div class="task-meta">ID: ${t.task_id} &nbsp;·&nbsp; Created: ${createdAt}</div>
+            ${errorHtml}
+          </div>
+          <div class="task-actions">${actionsHtml}</div>
+        </div>`;
+    }
+
+    // ── Polling for in-progress tasks ────────────────────────────────
+    function startPolling(taskId) {
+      if (pollingTimers[taskId]) return;
+      pollingTimers[taskId] = setInterval(() => pollTask(taskId), 3000);
+    }
+
+    async function pollTask(taskId) {
+      try {
+        const resp = await fetch(`/api/tasks/${taskId}/progress`);
+        const json = await resp.json();
+        if (json.code !== 200) return;
+        const d = json.data;
+        updateTaskCard(d);
+        if (d.status === 'completed' || d.status === 'failed') {
+          clearInterval(pollingTimers[taskId]);
+          delete pollingTimers[taskId];
+          // Refresh full list to keep ordering correct
+          await loadTasks();
+        }
+      } catch(e) {
+        console.error('Poll error:', e);
+      }
+    }
+
+    function updateTaskCard(d) {
+      const card = document.getElementById(`task-${d.task_id}`);
+      if (!card) return;
+      const pct = Math.round((d.progress || 0) * 100);
+      const bar = card.querySelector('.progress-fill');
+      if (bar) bar.style.width = pct + '%';
+    }
+
+    // ── Utility ─────────────────────────────────────────────────────
+    function escHtml(s) {
+      return String(s)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+    function truncate(s, n) { return s.length <= n ? s : s.slice(0, n) + '…'; }
+    function formatBytes(b) {
+      if (b < 1024) return b + ' B';
+      if (b < 1048576) return (b/1024).toFixed(1) + ' KB';
+      return (b/1048576).toFixed(1) + ' MB';
+    }
+    // ── Settings modal ────────────────────────────────────────────
+    const settingsBtn    = document.getElementById('settingsBtn');
+    const settingsOverlay= document.getElementById('settingsOverlay');
+    const modalClose     = document.getElementById('modalClose');
+    const modalCancel    = document.getElementById('modalCancel');
+    const modalSave      = document.getElementById('modalSave');
+    const sLlmEnabled    = document.getElementById('sLlmEnabled');
+    const llmFields      = document.getElementById('llmFields');
+    const settingsMsg    = document.getElementById('settingsMsg');
+
+    // Toggle LLM sub-fields
+    sLlmEnabled.addEventListener('change', () => {
+      llmFields.classList.toggle('disabled', !sLlmEnabled.checked);
+    });
+
+    // Open modal and load current settings
+    settingsBtn.addEventListener('click', async () => {
+      setSettingsMsg('');
+      try {
+        const resp = await fetch('/api/settings');
+        const json = await resp.json();
+        if (json.code === 200) {
+          const d = json.data;
+          sLlmEnabled.checked = !!d.toc_llm_enabled;
+          document.getElementById('sApiKey').value         = '';           // always blank
+          document.getElementById('sApiUrl').value         = d.toc_llm_api_url || '';
+          document.getElementById('sModel').value          = d.toc_llm_model || '';
+          document.getElementById('sTokenEncoding').value  = d.toc_llm_token_encoding || 'cl100k_base';
+          llmFields.classList.toggle('disabled', !sLlmEnabled.checked);
+        }
+      } catch(e) {
+        setSettingsMsg('Failed to load settings.', 'error');
+      }
+      settingsOverlay.classList.add('open');
+    });
+
+    function closeSettingsModal() {
+      settingsOverlay.classList.remove('open');
+    }
+
+    modalClose.addEventListener('click', closeSettingsModal);
+    modalCancel.addEventListener('click', closeSettingsModal);
+    // Click outside modal body closes it
+    settingsOverlay.addEventListener('click', e => {
+      if (e.target === settingsOverlay) closeSettingsModal();
+    });
+    // ESC key
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeSettingsModal();
+    });
+
+    modalSave.addEventListener('click', async () => {
+      modalSave.disabled = true;
+      setSettingsMsg('Saving…', 'info');
+      const body = {
+        toc_llm_enabled:        sLlmEnabled.checked,
+        toc_llm_api_url:        document.getElementById('sApiUrl').value.trim(),
+        toc_llm_model:          document.getElementById('sModel').value.trim(),
+        toc_llm_token_encoding: document.getElementById('sTokenEncoding').value.trim() || 'cl100k_base',
+      };
+      const apiKey = document.getElementById('sApiKey').value;
+      if (apiKey) body.toc_llm_api_key = apiKey;   // only send if user typed something
+
+      try {
+        const resp = await fetch('/api/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        const json = await resp.json();
+        if (json.code === 200) {
+          setSettingsMsg('Saved!', 'success');
+          setTimeout(closeSettingsModal, 800);
+        } else {
+          setSettingsMsg(`Error: ${json.msg}`, 'error');
+        }
+      } catch(e) {
+        setSettingsMsg('Network error: ' + e.message, 'error');
+      } finally {
+        modalSave.disabled = false;
+      }
+    });
+
+    function setSettingsMsg(msg, type = 'info') {
+      const colors = { info: '#8b949e', success: '#3fb950', error: '#f85149' };
+      settingsMsg.style.color = colors[type] || colors.info;
+      settingsMsg.textContent = msg;
+    }
+    // ── Startup ─────────────────────────────────────────────────────
+    (async () => {
+      await loadTasks();
+      // Resume polling for any running tasks loaded from server
+      const resp = await fetch('/api/tasks').catch(() => null);
+      if (!resp) return;
+      const json = await resp.json().catch(() => null);
+      if (!json || json.code !== 200) return;
+      (json.data.tasks || []).forEach(t => {
+        if (t.status === 'running' || t.status === 'pending') startPolling(t.task_id);
+      });
+    })();
+  </script>
+</body>
+</html>
