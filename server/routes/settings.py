@@ -10,8 +10,8 @@ import logging
 
 from fastapi import APIRouter
 
-from ..models import ApiResponse, UpdateSettingsRequest
-from ..settings_store import settings_store
+from server.models import ApiResponse, UpdateSettingsRequest
+from server.settings_store import settings_store
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/settings")

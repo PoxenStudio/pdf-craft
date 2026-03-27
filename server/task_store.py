@@ -17,14 +17,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
-from .config import (
+from server.config import (
     DATA_DIR,
     FILE_RETENTION_HOURS,
     INPUT_PDF_FILENAME,
     OUTPUT_EPUB_FILENAME,
     TASK_META_FILENAME,
 )
-from .models import TaskInfo, TaskStatus
+from server.models import TaskInfo, TaskStatus
 
 
 def _now_iso() -> str:

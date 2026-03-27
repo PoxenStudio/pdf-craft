@@ -9,15 +9,16 @@ Each call to `submit` spawns a daemon thread that:
 
 import threading
 import traceback
+import logging
 from pathlib import Path
 from typing import Literal
 
 from pdf_craft import LLM, OCREvent, OCREventKind, transform_epub
 from epub_generator import BookMeta
 
-from .models import TaskStatus
-from .settings_store import settings_store
-from .task_store import TaskStore
+from server.models import TaskStatus
+from server.settings_store import settings_store
+from server.task_store import TaskStore
 
 
 def _make_on_ocr_event(task_id: str, store: TaskStore):
@@ -89,6 +90,8 @@ def _run_task(
             store.update_completed(task_id)
     except Exception:
         error_msg = traceback.format_exc()
+        logging.error("Task %s failed: %s", task_id, error_msg)
+        logging.error(" Call stack:\n%s", error_msg)
         store.update_failed(task_id, error_msg)
 
 

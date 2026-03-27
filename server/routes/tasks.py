@@ -14,9 +14,9 @@ from typing import Annotated, Literal
 from fastapi import APIRouter, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse
 
-from ..models import ApiResponse, TaskStatus
-from ..task_runner import submit
-from ..task_store import task_store
+from server.models import ApiResponse, TaskStatus
+from server.task_runner import submit
+from server.task_store import task_store
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/tasks")

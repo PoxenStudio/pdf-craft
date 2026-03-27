@@ -6,8 +6,8 @@ retention window.  Runs as a single daemon thread.
 import logging
 import threading
 
-from .config import CLEANUP_INTERVAL_SECONDS
-from .task_store import TaskStore
+from server.config import CLEANUP_INTERVAL_SECONDS
+from server.task_store import TaskStore
 
 logger = logging.getLogger(__name__)
 

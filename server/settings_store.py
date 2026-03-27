@@ -11,8 +11,8 @@ The api_key is stored on disk but NEVER returned to API clients
 import threading
 from pathlib import Path
 
-from .config import DATA_DIR
-from .models import ServerSettings, UpdateSettingsRequest
+from server.config import DATA_DIR
+from server.models import ServerSettings, UpdateSettingsRequest
 
 _SETTINGS_FILE = DATA_DIR / "settings.json"
 

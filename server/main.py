@@ -15,11 +15,13 @@ from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
-from .cleanup import start_cleanup_scheduler
-from .config import DATA_DIR, SERVER_HOST, SERVER_PORT
-from .routes import settings_router, tasks_router
-from .settings_store import settings_store as _settings_store  # noqa: F401 – initialises singleton
-from .task_store import task_store
+from server.cleanup import start_cleanup_scheduler
+from server.config import DATA_DIR, SERVER_HOST, SERVER_PORT
+from server.routes import settings_router, tasks_router
+from server.settings_store import (
+    settings_store as _settings_store,
+)  # noqa: F401 – initialises singleton
+from server.task_store import task_store
 
 logging.basicConfig(
     level=logging.INFO,
@@ -69,7 +71,7 @@ async def on_startup() -> None:
 
 if __name__ == "__main__":
     uvicorn.run(
-        "server.main:app",
+        app,
         host=SERVER_HOST,
         port=SERVER_PORT,
         reload=False,
